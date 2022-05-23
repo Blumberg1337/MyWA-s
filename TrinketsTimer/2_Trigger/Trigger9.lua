@@ -1,9 +1,9 @@
 -- trigger data (copy text inside of quotes)
 type = "Custom"
 eventType = "Status"
-checkOn = 'Event(s)';
-events = "LOADING_SCREEN_DISABLED"
+checkOn = "Event(s)"
+events = "TRINKET_TIMERS_GLOW"
 
 customTrigger = function()
-  aura_env.compareTrinketTimes()
+    return aura_env.glow
 end
