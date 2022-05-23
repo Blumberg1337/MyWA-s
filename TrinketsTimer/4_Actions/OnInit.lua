@@ -170,7 +170,7 @@ getTrinketCds = function()
 end
 
 glowing = function(glow, restricted)
-  if (aura_anv.config.glow and not restricted) then
+  if (aura_env.config.glow and not restricted) then
     aura_env.glow = glow == true
     WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
   end
