@@ -50,16 +50,12 @@ aura_env.compareTrinketTimes = function()
     -- we can run into an infinite recursion when both trinkets are off cd shortly after another here (within lastSeconds)
     -- to ensure that this doesn't happen, we enable the cancel condition for cdReady if the other trinket is off cd
     if ((lastSeconds_1 < lastSeconds_2 or end_2 == 0) and lastSeconds_1 <= 5 and lastSeconds_1 > 0) then
-      print('lastSeconds_1: ', lastSeconds_1)
-      print('lastSeconds_2: ', lastSeconds_2)
       end_2 = end_1 + 1
       aura_env.overwroteExpirationTime = true
       aura_env.glow = true
       WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
     end
     if ((lastSeconds_2 <= lastSeconds_1 or end_1 == 0) and lastSeconds_2 <= 5 and lastSeconds_2 > 0) then
-      print('lastSeconds_1: ', lastSeconds_1)
-      print('lastSeconds_2: ', lastSeconds_2)
       end_1 = end_2 + 1
       aura_env.overwroteExpirationTime = true
       aura_env.glow = true
