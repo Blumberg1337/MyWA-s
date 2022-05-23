@@ -14,9 +14,6 @@ aura_env.compareTrinketTimes = function()
 
   local duration_1, end_1, duration_2, end_2
 
-  -- set toggle for glowing to false per default 
-  aura_env.glow = false
-  
   -- we want to check for the trinkets aura uptimes first
   duration_1, duration_2, end_1, end_2 = getTrinketAurasTime()
 
@@ -34,7 +31,7 @@ aura_env.compareTrinketTimes = function()
     if (end_1 == 0 or end_2 == 0) then
       aura_env.cdReady_1 = end_1 == 0
       aura_env.cdReady_2 = end_2 == 0
-      WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
+      glowing(false)
     end
 
     -- to show trinket cooldowns shortly before expiring, we swap the expirationTimes
@@ -43,26 +40,30 @@ aura_env.compareTrinketTimes = function()
     -- therefore we set the aura_env variable to true accourdingly (performance feature)
     -- we have to put this part of the wa here due to the wanding workaround mentioned above
     -- (there are other ways where to put this part, but this seems optimal)
-    local currentTime = GetTime()
-    local lastSeconds_1 = end_1 - currentTime
-    local lastSeconds_2 = end_2 - currentTime
-    -- lastSeconds_n can be negative (end_n == 0) if a trinket is off cd, but we want to overwrite its cd anyway
-    -- we can run into an infinite recursion when both trinkets are off cd shortly after another here (within lastSeconds)
-    -- to ensure that this doesn't happen, we enable the cancel condition for cdReady if the other trinket is off cd
-    if ((lastSeconds_1 < lastSeconds_2 or end_2 == 0) and lastSeconds_1 <= 5 and lastSeconds_1 > 0) then
-      end_2 = end_1 + 1
-      aura_env.overwroteExpirationTime = true
-      aura_env.glow = true
-      WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
-    end
-    if ((lastSeconds_2 <= lastSeconds_1 or end_1 == 0) and lastSeconds_2 <= 5 and lastSeconds_2 > 0) then
-      end_1 = end_2 + 1
-      aura_env.overwroteExpirationTime = true
-      aura_env.glow = true
-      WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
-    end
-    if (lastSeconds_1 > 5 and lastSeconds_2 > 5) then
-      WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
+    if (aura_env.config.lastSecondsToggle) then
+      local currentTime = GetTime()
+      local lastSeconds_1 = end_1 - currentTime
+      local lastSeconds_2 = end_2 - currentTime
+      -- lastSeconds_n can be negative (end_n == 0) if a trinket is off cd, but we want to overwrite its cd anyway
+      -- we can run into an infinite recursion when both trinkets are off cd shortly after another here (within lastSeconds)
+      -- to ensure that this doesn't happen, we enable the cancel condition for cdReady if the other trinket is off cd
+      if (lastSeconds_1 < lastSeconds_2 or end_2 == 0) then
+        if (lastSeconds_1 <= aura_env.config.lastSeconds and lastSeconds_1 > 0) then
+          end_2 = end_1 + 1
+          aura_env.overwroteExpirationTime = true
+          glowing(true, aura_env.config.glowBuffsOnly)
+        end
+      end
+      if (lastSeconds_2 <= lastSeconds_1 or end_1 == 0) then
+        if (lastSeconds_2 <= aura_env.config.lastSeconds and lastSeconds_2 > 0) then
+          end_1 = end_2 + 1
+          aura_env.overwroteExpirationTime = true
+          glowing(true, aura_env.config.glowBuffsOnly)
+        end
+      end
+      if (lastSeconds_1 > 5 and lastSeconds_2 > 5) then
+        glowing(false)
+      end
     end
   end
 
@@ -91,8 +92,7 @@ getTrinketAurasTime = function()
   -- set toggle for activeTrinket and glow and send glow event when there is at least one active trinket aura to true
   if (aura_1 or aura_2) then
     aura_env.activeTrinket = true
-    aura_env.glow = true
-    WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
+    glowing(true)
   end
 
   -- if we found an aura from the use of either trinket get its duration, otherwise set it to 0
@@ -167,4 +167,11 @@ getTrinketCds = function()
   end
 
   return duration_1, duration_2, end_1, end_2
+end
+
+glowing = function(glow, restricted)
+  if (aura_anv.config.glow and not restricted) then
+    aura_env.glow = glow == true
+    WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
+  end
 end
