@@ -161,5 +161,14 @@ getTrinketCds = function()
     end_2 = 0
   end
 
+  -- it appears to happen that the end_n time can be slightly above 0 seconds when listening for a condition
+  -- we avoid this behavior to a limit of a millisecond here, e.g. to ensure glowing effects to be handled correctly
+  if (end_1 * 1000 < 1) then
+    end_1 = 0
+  end
+  if (end_2 * 1000 < 1) then
+    end_2 = 0
+  end
+
   return duration_1, duration_2, end_1, end_2
 end
