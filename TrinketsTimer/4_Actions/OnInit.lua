@@ -29,8 +29,6 @@ aura_env.compareTrinketTimes = function()
 
     -- if a trinket is off cd its expirationTime (end_n) is 0 and we toggle the referring aura_env variables
     if (end_1 == 0 or end_2 == 0) then
-      print('end_1: ', end_1)
-      print('end_2: ', end_2)
       aura_env.cdReady_1 = end_1 == 0
       aura_env.cdReady_2 = end_2 == 0
       glowing(false)
@@ -43,13 +41,9 @@ aura_env.compareTrinketTimes = function()
     -- we have to put this part of the wa here due to the wanding workaround mentioned above
     -- (there are other ways where to put this part, but this seems optimal)
     if (aura_env.config.lastSecondsToggle) then
-      print('end_1: ', end_1)
-      print('end_2: ', end_2)
       local currentTime = GetTime()
       local lastSeconds_1 = end_1 - currentTime
       local lastSeconds_2 = end_2 - currentTime
-      print('lastSeconds_1: ', lastSeconds_1)
-      print('lastSeconds_2: ', lastSeconds_2)
       -- lastSeconds_n can be negative (end_n == 0) if a trinket is off cd, but we want to overwrite its cd anyway
       -- we can run into an infinite recursion when both trinkets are off cd shortly after another here (within lastSeconds)
       -- to ensure that this doesn't happen, we enable the cancel condition for cdReady if the other trinket is off cd
@@ -164,11 +158,11 @@ getTrinketCds = function()
   end
 
   -- it appears to happen that the end_n time isn't 0 seconds when listening for a condition tracking a cd ready event
-  -- we avoid this behavior to a limit of a millisecond here, e.g. to ensure glowing effects to be handled correctly
-  if (((end_1 - GetTime()) * 1000) <= 1) then
+  -- we avoid this behavior to a limit of a second here, e.g. to ensure glowing effects to be handled correctly
+  if ((end_1 - GetTime()) <= 1) then
     end_1 = 0
   end
-  if (((end_2 - GetTime()) * 1000) <= 1) then
+  if ((end_2 - GetTime()) <= 1) then
     end_2 = 0
   end
 
