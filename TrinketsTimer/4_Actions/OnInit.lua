@@ -77,7 +77,13 @@ aura_env.compareTrinketTimes = function()
   else
     aura_env.duration = duration_2 or 0
     aura_env.expirationTime = end_2 or 0
-    aura_env.icon = aura_env.trinket_2_usable and GetItemIcon(aura_env.trinket_2_Id)
+    if (aura_env.trinket_2_usable) then
+      aura_env.icon = GetItemIcon(aura_env.trinket_2_Id)
+    elseif (aura_env.trinket_1_usable) then
+      aura_env.icon = GetItemIcon(aura_env.trinket_1_Id)
+    else
+      aura_env.icon = GetItemIcon(aura_env.trinket_2_Id)
+    end
     WeakAuras.ScanEvents("TRINKET_TIMERS_INITIALIZED")
   end
 end
