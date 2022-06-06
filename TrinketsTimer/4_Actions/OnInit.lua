@@ -89,7 +89,7 @@ aura_env.compareTrinketTimes = function()
 end
 
 -- function to present information about the active aura for either trinket with the shorter remaining uptime
-getTrinketAurasTime = function()
+local getTrinketAurasTime = function()
   local end_1, end_2
   -- we check for the aura by its name from GetItemSpell(itemId)
   local aura_1 = AuraUtil.FindAuraByName(aura_env.trinket_1_spellName, "player")
@@ -125,7 +125,7 @@ getTrinketAurasTime = function()
 end
 
 -- function to present information about the cooldown of either trinket with the shorter remaining uptime
-getTrinketCds = function()
+local getTrinketCds = function()
   local start_1, duration_1, end_1, start_2, duration_2, end_2
 
   -- set toggle for activeTrinket when there are no active trinket auras to false
@@ -175,7 +175,7 @@ getTrinketCds = function()
   return duration_1, duration_2, end_1, end_2
 end
 
-glowing = function(glow, restricted)
+local glowing = function(glow, restricted)
   if (aura_env.config.glow and not restricted) then
     aura_env.glow = glow == true
     WeakAuras.ScanEvents("TRINKET_TIMERS_GLOW")
