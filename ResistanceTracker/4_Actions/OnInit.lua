@@ -186,7 +186,7 @@ aura_env.resistanceBuffsValue = function()
     end
   end
 
-  local resistanceIndex
+  local resistanceIndex = 0
   for i=1, #resistanceTypeValues do
     -- i+1 = resistanceIndex starting with 2 -> "fire", etc.
     local _, _, bonus = UnitResistance("player", i+1)
