@@ -162,7 +162,7 @@ aura_env.resistanceBuffsValue = function()
         for k=1, #value[2] do
           -- value[1] = resistanceValue
           -- value[2][k] = resistanceIndex in aura_env.resistanceBuffs
-          -- value[2][k] - 1 = resistanceIndex in maximalValuesFound (iteration starts from "fire" = 1, but resistanceIndex "fire" = 2)
+          -- value[2][k] - 1 = resistanceIndex in maximumValuesFound (iteration starts from "fire" = 1, but resistanceIndex "fire" = 2)
           if (maximumValuesFound[i][value[2][k]-1] < value[1]) then
             maximumValuesFound[i][value[2][k]-1] = value[1]
           end
@@ -181,7 +181,7 @@ aura_env.resistanceBuffsValue = function()
   }
 
   for i=1, #maximumValuesFound do
-    for k=1, #maximalValuesFound[i] do
+    for k=1, #maximumValuesFound[i] do
       resistanceTypeValues[k] = resistanceTypeValues[k] + maximumValuesFound[i][k]
     end
   end
