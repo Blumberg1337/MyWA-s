@@ -105,7 +105,7 @@ aura_env.resistanceBuffs = {
 -- Sadly, we can't track MotW/GotW modifiers for buffed characters other then the buffing character.
 aura_env.frostWarding = function()
   -- Get talent points for "Frost Warding"
-  name, _, _, _, rank = GetTalentInfo(3, 1)
+  local name, _, _, _, rank = GetTalentInfo(3, 1)
   if name == "Frost Warding" then
     if rank == 1 then return 1,15
     elseif rank == 2 then return 1,3
