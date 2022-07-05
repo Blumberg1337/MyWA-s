@@ -2,8 +2,6 @@
 type = "Custom"
 eventType = "Event"
 --PLAYER_REGEN_DISABLED = getting outfight event
---LOADING_SCREEN_DISABLED
---UNIT_INVENTORY_CHANGED:player
 events = "PLAYER_REGEN_DISABLED, LOADING_SCREEN_DISABLED, UNIT_INVENTORY_CHANGED:player"
 
 customTrigger = function()
