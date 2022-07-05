@@ -171,7 +171,7 @@ aura_env.resistanceBuffsValue = function()
     end
   end
 
-  -- Sum up resistances and calculate bonus resistance values. --
+  -- Sum up resistances and calculate remaining bonus resistance values. --
   local resistanceTypeValues = {
     0,  -- fire
     0,  -- nature
@@ -190,9 +190,7 @@ aura_env.resistanceBuffsValue = function()
   for i=1, #resistanceTypeValues do
     -- i+1 = resistanceIndex starting with 2 -> "fire", etc.
     local _, _, bonus = UnitResistance("player", i+1)
-    if (bonus - resistanceTypeValues[i] > 0) then
-      resistanceTypeValues[i] = bonus - resistanceTypeValues[i]
-    end
+    resistanceTypeValues[i] = bonus - resistanceTypeValues[i]
     if (i == 1 and resistanceTypeValues[i] > 0) then
       resistanceIndex = i
     elseif (i > 1 and resistanceTypeValues[i] > 0 and resistanceTypeValues[i] >= resistanceTypeValues[i-1]) then
