@@ -103,7 +103,7 @@ aura_env.kingsAvailability = function()
 end
 
 -- In the rare case of having only a protection paladin able to buff Blessing of Sanctuary OR Blessing of Kings,
--- we need this function, because it is impossible for a single paladin to buff players with both buffs.
+-- we need this function, because it is impossible for a single paladin to buff another player with both buffs.
 -- This function validates that there is one paladin buffing Blessing of Sanctuary AND another one buffing Blessing of Kings.
 aura_env.sanctuaryAndKingsAvailability = function()
   local sanctuary = false
