@@ -227,7 +227,7 @@ end
 aura_env.evaluateRoleByCritImmunity = function ()
 end
 
--- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s).
+-- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
 -- check druid tank spec via if def = crit immune
 -- track fire elemental from shaman before fight (snapshotted)
 -- track fire mage, warlock specs
