@@ -23,164 +23,211 @@
 -- }
 
 aura_env.kingsSpellIds = {20217, 25898}
-aura_env.sanctuarySpellIds = {27168, 27169, 20911, 20912, 20913, 20914, 25899}
+aura_env.sanctuarySpellIds = {27168, 27169}    -- {20911, 20912, 20913, 20914, 25899} other ranks (not important for GetSpellInfo())
 
 -- Data Model
--- {Class-SpecRole, {paladinBlessings}, classFileName, talentTreeNumber, talentNumber}
+-- ["Class-SpecRole"] = {paladinBlessings}
 aura_env.defaultBuffPriorities = {
-  {"WARRIOR-MELEE", {"SALVATION", "MIGHT", "KINGS", "LIGHT", "SANCTUARY"}, "WARRIOR", 2, 13 --[[Sweeping Strikes]]},
-  {"WARRIOR-TANK", {"KINGS", "MIGHT", "LIGHT", "SANCTUARY"}, "WARRIOR", 3, 19 --[[Shield Slam]]},
-  {"PALADIN-HEAL", {"KINGS", "Wisdom", "SALVATION", "LIGHT", "SANCTUARY"}, "PALADIN", 1, 17 --[[Holy Shock]]},
-  {"PALADIN-TANK", {"KINGS", "SANCTUARY", "WISDOM", "LIGHT", "MIGHT"}, "PALADIN", 2, 19 --[[Holy Shield]]},
-  {"PALADIN-MELEE", {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "PALADIN", 3, 22 --[[Crusader Strike]]},
-  {"HUNTER-BM", {"MIGHT", "KINGS", "SALVATION", "WISDOM", "LIGHT", "SANCTUARY"}, "HUNTER", 1, 21 --[[The Beast Within]]},
-  {"HUNTER-SV", {"KINGS", "MIGHT", "SALVATION", "WISDOM", "LIGHT", "SANCTUARY"}, "HUNTER", 3, 21 --[[Expose Weakness]]},
-  {"ROGUE", {"SALVATION", "MIGHT", "KINGS", "LIGHT", "SANCTUARY"}, "ROGUE"},
-  {"PRIEST-HEAL", {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"}, "PRIEST", 2, 3 --[[Holy Specialization]]},
-  {"PRIEST-CASTER", {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "PRIEST", 3, 19 --[[Shadowform]]},
-  {"SHAMAN-CASTER", {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "SHAMAN", 1, 17 --[[Elemental Mastery]]},
-  {"SHAMAN-MELEE", {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "SHAMAN", 2, 18 --[[Dual Wield]]},
-  {"SHAMAN-HEAL", {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"}, "SHAMAN", 3, 20 --[[Earth Shield]]},
-  {"MAGE", {"WISDOM", "KINGS", "SALVATION", "LIGHT", "SANCTUARY"}, "MAGE"},
-  {"WARLOCK", {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "WARLOCK"},
-  {"DRUID-CASTER", {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "DRUID", 1, 18 --[[Moonkin Form]]},
-  {"DRUID-TANK", {"KINGS", "MIGHT", "LIGHT", "SANCTUARY", "WISDOM"}, "DRUID", 2, 21 --[[Mangle]]},
-  {"DRUID-MELEE", {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"}, "DRUID", 2, 21 --[[Mangle]]},
-  {"DRUID-HEAL", {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"}, "DRUID", 3, 14 --[[Empowered Touch]]},
-  {"PET", {"MIGHT", "KINGS", "SANCTUARY", "LIGHT", "SALVATION"}},
+  ["WARRIOR-MELEE"] = {"SALVATION", "MIGHT", "KINGS", "LIGHT", "SANCTUARY"},
+  ["WARRIOR-TANK"] = {"KINGS", "MIGHT", "LIGHT", "SANCTUARY"},
+  ["PALADIN-HEAL"] = {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"},
+  ["PALADIN-TANK"] = {"KINGS", "SANCTUARY", "WISDOM", "LIGHT", "MIGHT"},
+  ["PALADIN-MELEE"] = {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["HUNTER-BM"] = {"MIGHT", "KINGS", "SALVATION", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["HUNTER-SV"] = {"KINGS", "MIGHT", "SALVATION", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["ROGUE"] = {"SALVATION", "MIGHT", "KINGS", "LIGHT", "SANCTUARY"},
+  ["PRIEST-HEAL"] = {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"},
+  ["PRIEST-CASTER"] = {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["SHAMAN-CASTER"] = {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["SHAMAN-MELEE"] = {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["SHAMAN-HEAL"] = {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"},
+  ["MAGE"] = {"WISDOM", "KINGS", "SALVATION", "LIGHT", "SANCTUARY"},
+  ["WARLOCK"] = {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["DRUID-CASTER"] = {"SALVATION", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["DRUID-TANK"] = {"KINGS", "MIGHT", "LIGHT", "SANCTUARY", "WISDOM"},
+  ["DRUID-MELEE"] = {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
+  ["DRUID-HEAL"] = {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"},
+  ["PET"] = {"MIGHT", "KINGS", "SANCTUARY", "LIGHT", "SALVATION"},
 }
 
+-- Data Model
+-- ["Class-SpecRole"] = {classFileName, talentTreeNumber, talentNumber}
+aura_env.specRoleData = {
+  ["WARRIOR-MELEE"] = {"WARRIOR", 2, 13 --[[Sweeping Strikes]]},
+  ["WARRIOR-TANK"] = {"WARRIOR", 3, 19 --[[Shield Slam]]},
+  ["PALADIN-HEAL"] = {"PALADIN", 1, 17 --[[Holy Shock]]},
+  ["PALADIN-TANK"] = {"PALADIN", 2, 19 --[[Holy Shield]]},
+  ["PALADIN-MELEE"] = {"PALADIN", 3, 22 --[[Crusader Strike]]},
+  ["HUNTER-BM"] = {"HUNTER", 1, 21 --[[The Beast Within]]},
+  ["HUNTER-SV"] = {"HUNTER", 3, 21 --[[Expose Weakness]]},
+  ["ROGUE"] = {"ROGUE"},
+  ["PRIEST-HEAL"] = {"PRIEST", 2, 3 --[[Holy Specialization]]},
+  ["PRIEST-CASTER"] = {"PRIEST", 3, 19 --[[Shadowform]]},
+  ["SHAMAN-CASTER"] = {"SHAMAN", 1, 17 --[[Elemental Mastery]]},
+  ["SHAMAN-MELEE"] = {"SHAMAN", 2, 18 --[[Dual Wield]]},
+  ["SHAMAN-HEAL"] = {"SHAMAN", 3, 20 --[[Earth Shield]]},
+  ["MAGE"] = {"MAGE"},
+  ["WARLOCK"] = {"WARLOCK"},
+  ["DRUID-CASTER"] = {"DRUID", 1, 18 --[[Moonkin Form]]},
+  ["DRUID-TANK"] = {"DRUID", 2, 21 --[[Mangle]]},
+  ["DRUID-MELEE"] = {"DRUID", 2, 21 --[[Mangle]]},
+  ["DRUID-HEAL"] = {"DRUID", 3, 14 --[[Empowered Touch]]},
+}
 
-aura_env.iterateGroupMembersFor = function(reason)
-  aura_env.paladinCount = 0
+-- (Greater) Blessing of Sanctuary is only available if the related talent is taken by a paladin in your group.
+-- Because of that, we track for other raid members having these buffs first to ensure availability.
+aura_env.sanctuaryAvailability = function()
   for unit in WA_IterateGroupMembers() do
-    -- (Greater) Blessing of Sanctuary is only available if a prot paladin is within your raid group. (Talent taken)
-    -- Also (Greater) Blessing of Kings is only available if the related talent is taken by a paladin in your group.
-    -- Because of that, we track for other raid members having these buffs first to ensure availability.
-    if (reason == "sanctuaryAvailability") then
-      for spellId in aura_env.sanctuarySpellIds do
-        local name = GetSpellInfo(spellId)
-        if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
-          return true
-        end
+    for spellId in aura_env.sanctuarySpellIds do
+      local name = GetSpellInfo(spellId)
+      if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
+        return true
       end
-      return false
     end
+  end
+  return false
+end
 
-    if (reason == "kingsAvailability") then
-      for spellId in aura_env.kingsSpellIds do
-        local name = GetSpellInfo(spellId)
-        if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
-          return true
-        end
+-- (Greater) Blessing of Kings is only available if the related talent is taken by a paladin in your group.
+-- Because of that, we track for other raid members having these buffs first to ensure availability.
+aura_env.kingsAvailability = function()
+  for unit in WA_IterateGroupMembers() do
+    for spellId in aura_env.kingsSpellIds do
+      local name = GetSpellInfo(spellId)
+      if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
+        return true
       end
-      return false
     end
+  end
+  return false
+end
 
-    -- In the rare case of having only a protection paladin able to buff Blessing of Sanctuary OR Blessing of Kings,
-    -- we need this function, because it is impossible for this single protection paladin to buff players with both buffs.
-    -- This functions validates that there is one paladin buffing Blessing of Sanctuary AND another one buffing Blessing of Kings.
-    if (reason == "sanctuaryAndKingsAvailability") then
-      for spellIdSanctuary in aura_env.sanctuarySpellIds do
-        for spellIdKings in aura_env.kingsSpellIds do
-          local nameSanctuary = GetSpellInfo(spellIdSanctuary)
-          local nameKings = GetSpellInfo(spellIdKings)
-          if (AuraUtil.FindAuraByName(nameSanctuary, unit) ~= nil and
-              AuraUtil.FindAuraByName(nameKings, unit) ~= nil) then
-            return true
-          end
-        end
+-- In the rare case of having only a protection paladin able to buff Blessing of Sanctuary OR Blessing of Kings,
+-- we need this function, because it is impossible for a single paladin to buff players with both buffs.
+-- This function validates that there is one paladin buffing Blessing of Sanctuary AND another one buffing Blessing of Kings.
+aura_env.sanctuaryAndKingsAvailability = function()
+  local sanctuary = false
+  local kings = false
+  for unit in WA_IterateGroupMembers() do
+    for spellId in aura_env.sanctuarySpellIds do
+      local name = GetSpellInfo(spellId)
+      if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
+        sanctuary = true
       end
-      return false
     end
-
-    -- Count paladins in raid group.
-    if (reason == "paladinCount") then
-      local classFilename = UnitClassBase(unit)
-      if (classFilename == "PALADIN") then
-        aura_env.paladinCount = aura_env.paladinCount + 1
+    for spellId in aura_env.kingsSpellIds do
+      local name = GetSpellInfo(spellId)
+      if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
+        kings = true
       end
+    end
+  end
+  return sanctuary and kings
+end
+
+-- Count paladins in raid / group.
+aura_env.countPaladinsInRaidGroup = function()
+  aura_env.paladinCount = 0
+
+  for unit in WA_IterateGroupMembers() do
+    local classFilename = UnitClassBase(unit)
+    if (classFilename == "PALADIN") then
+      aura_env.paladinCount = aura_env.paladinCount + 1
     end
   end
 end
 
 aura_env.sendPaladinBlessingEvents = function()
-  aura_env.iterateGroupMembersFor("paladinCount")
-
-  local sanctuaryAndKingsAvailability = aura_env.iterateGroupMembersFor("sanctuaryAndKingsAvailability")
-  local sanctuaryAvailability = aura_env.iterateGroupMembersFor("sanctuaryAvailability")
-  local kingsAvailability = aura_env.iterateGroupMembersFor("kingsAvailability")
+  aura_env.countPaladinsInRaidGroup()
 
   local classFilename = UnitClassBase("player")
   local hasPet = HasPetUI()
-  local customEvent = "PALADIN_BLESSING_PRIORITY_"
-  local sanctuaryPriority, kingsPriority = nil
+  local customEventName = "PALADIN_BLESSING_PRIORITY_"
+  local playerSpecRole = nil
+  local playerBlessingPriority = {}
+  local petBlessingPriority = {}
 
-  for i=1, #aura_env.defaultBuffPriorities do
-    if (classFileName == aura_env.defaultBuffPriorities[i][3] or aura_env.defaultBuffPriorities[i][1] == "PET") then
-      local talentTreeNumber = aura_env.defaultBuffPriorities[i][4] or 1
-      local talentNumber = aura_env.defaultBuffPriorities[i][5] or 1
-      local _, _, _, _, rank = GetTalentInfo(talentTreeNumber, talentNumber)
-      
-      if (rank > 0 or hasPet) then
-        for k=1, k <= aura_env.paladinCount do
-          -- only do stuff until reaching end of priority list
-          if (aura_env.defaultBuffPriorities[i][2][k] ~= nil) then
-            if (sanctuaryAndKingsAvailability) then
-              WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-              if (hasPet) then
-                WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
-              end
-            elseif (kingsAvailability or sanctuaryAvailability) then
-              -- workaround for sanctuary or kings available (even from same player) -> kings higher priority
-              if (kingsAvailability and aura_env.defaultBuffPriorities[i][2][k] == "KINGS") then
-                kingsPriority = k
-                if (not sanctuaryPriority) then
-                  WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-                  if (hasPet) then
-                    WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
-                  end
-                else
-                  aura_env.paladinCount = aura_env.paladinCount + 1
-                end
-              else
-                WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-                if (hasPet) then
-                  WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
-                end
-              end
-              -- workaround for sanctuary or kings available (even from same player) -> sanctuary higher priority
-              if (sanctuaryAvailability and aura_env.defaultBuffPriorities[i][2][k] == "SANCTUARY") then
-                sanctuaryPriority = k
-                if (not kingsPriority) then
-                  WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-                  if (hasPet) then
-                    WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
-                  end
-                else
-                  aura_env.paladinCount = aura_env.paladinCount + 1
-                end
-              else
-                WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-                if (hasPet) then
-                  WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
-                end
-              end
-            -- any other case
-            else
-              WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-              if (hasPet) then
-                WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
-              end
-            end
+  -- Find player spec.
+  for specRole, data in pairs(aura_env.specRoleData) do
+    if (data[1] == classFilename) then
+      if (data[2] and data[3]) then
+        local _, _, _, _, rank = GetTalentInfo(data[2], data[3])
+        if (rank > 0) then
+          -- Druid Tank and Druid Melee set same talent points. Therfore we check for crit immunity here.
+          if (data[1] == "DRUID") then
+            playerSpecRole = aura_env.evaluateRoleByCritImmunity()
+          else
+            playerSpecRole = specRole
           end
         end
+      -- Rogues have no specs that differ in blessing priorities. So they don't have any talent information.
+      elseif (not data[2] and not data[3]) then
+        playerSpecRole = specRole
       end
+    end
+  end
+
+  -- Find and copy the player's blessing priority
+  if (playerSpecRole) then
+    local defaultBuffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
+    playerBlessingPriority = aura_env.filterBlessings(defaultBuffPriority)
+  end
+  
+  -- Find and copy the player's pet blessing priority
+  if (hasPet) then
+    local defaultBuffPriority = aura_env.defaultBuffPriorities["PET"]
+    petBlessingPriority = aura_env.filterBlessings(defaultBuffPriority)
+  end
+
+  -- Send custom events to check for available paladin blessing for the player.
+  if (#playerBlessingPriority > 0) then
+    for i=1, #playerBlessingPriority do
+      WeakAuras.ScanEvent(customEventName..playerBlessingPriority[i])
+    end
+  end
+
+  -- Send custom events to check for available paladin blessing for the player's pet.
+  if (#petBlessingPriority > 0) then
+    for i=1, #petBlessingPriority do
+      WeakAuras.ScanEvent(customEventName.."PET_"..petBlessingPriority[i])
     end
   end
 end
 
--- Send custom event when buffs are about to run out (customizable in seconds!).
+aura_env.filterBlessings = function(buffPriority)
+  local sanctuaryAndKingsAvailability = aura_env.sanctuaryAndKingsAvailability()
+  local sanctuaryAvailability = aura_env.sanctuaryAvailability()
+  local kingsAvailability = aura_env.kingsAvailability()
+  local blessingPriority = {}
+
+  for i = 1, #buffPriority do
+    if (sanctuaryAndKingsAvailability) then
+      blessingPriority[i] = buffPriority[i]
+    -- Filter (Greater) Blessing of Sanctuary if not available.
+    elseif (buffPriority[i] == "SANCTUARY" and not sanctuaryAvailability) then
+      -- Avoid index out of bounds error.
+      if (i < #buffPriority) then
+        blessingPriority[i] = buffPriority[i+1]
+        i = i + 1
+      end
+    -- Filter (Greater) Blessing of Kings if not available.
+    elseif (buffPriority[i] == "KINGS" and not kingsAvailability) then
+      -- Avoid index out of bounds error.
+      if (i < #buffPriority) then
+        blessingPriority[i] = buffPriority[i+1]
+        i = i + 1
+      end
+    else
+      blessingPriority[i] = buffPriority[i]
+    end
+  end
+  return blessingPriority
+end
+
+aura_env.evaluateRoleByCritImmunity = function ()
+end
+
+-- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s).
 -- check druid tank spec via if def = crit immune
 -- track fire elemental from shaman before fight (snapshotted)
 -- track fire mage, warlock specs
