@@ -50,11 +50,12 @@ aura_env.defaultBuffPriorities = {
   {"PET", {"MIGHT", "KINGS", "SANCTUARY", "LIGHT", "SALVATION"}},
 }
 
+
 aura_env.iterateGroupMembersFor = function(reason)
   aura_env.paladinCount = 0
   for unit in WA_IterateGroupMembers() do
     -- (Greater) Blessing of Sanctuary is only available if a prot paladin is within your raid group. (Talent taken)
-    -- Also (Greater) Blessing of Kings is only available if a talent is taken by a paladin in your group.
+    -- Also (Greater) Blessing of Kings is only available if the related talent is taken by a paladin in your group.
     -- Because of that, we track for other raid members having these buffs first to ensure availability.
     if (reason == "sanctuaryAvailability") then
       for spellId in aura_env.sanctuarySpellIds do
@@ -110,42 +111,69 @@ aura_env.sendPaladinBlessingEvents = function()
   local sanctuaryAvailability = aura_env.iterateGroupMembersFor("sanctuaryAvailability")
   local kingsAvailability = aura_env.iterateGroupMembersFor("kingsAvailability")
 
-  -- extract logic from here and make data map with ["HUNTER-SV"] = {classFileName: "HUNTER", GetTalentInfo(x:3,y:21) oder nur x und y}
-  -- iterate over data map and see if classFileName matches, then do stuff
-  -- commentate why availabilty-Workarounds are necessary
   local classFilename = UnitClassBase("player")
+  local hasPet = HasPetUI()
   local customEvent = "PALADIN_BLESSING_PRIORITY_"
   local sanctuaryPriority, kingsPriority = nil
 
   for i=1, #aura_env.defaultBuffPriorities do
-    if (classFileName == aura_env.defaultBuffPriorities[i][3]) then
-      local talentTreeNumber = aura_env.defaultBuffPriorities[i][4]
-      local talentNumber = aura_env.defaultBuffPriorities[i][5]
+    if (classFileName == aura_env.defaultBuffPriorities[i][3] or aura_env.defaultBuffPriorities[i][1] == "PET") then
+      local talentTreeNumber = aura_env.defaultBuffPriorities[i][4] or 1
+      local talentNumber = aura_env.defaultBuffPriorities[i][5] or 1
       local _, _, _, _, rank = GetTalentInfo(talentTreeNumber, talentNumber)
       
-      if (rank > 0) then
+      if (rank > 0 or hasPet) then
         for k=1, k <= aura_env.paladinCount do
-          if (sanctuaryAndKingsAvailability) then
-            if (aura_env.defaultBuffPriorities[i][2][k] == "SANCTUARY" or
-                aura_env.defaultBuffPriorities[i][2][k] == "KINGS") then
+          -- only do stuff until reaching end of priority list
+          if (aura_env.defaultBuffPriorities[i][2][k] ~= nil) then
+            if (sanctuaryAndKingsAvailability) then
               WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-            end
-          elseif (kingsAvailability or sanctuaryAvailability) then
-            if (kingsAvailability and aura_env.defaultBuffPriorities[i][2][k] == "KINGS") then
-              kingsPriority = i
-              if (sanctuaryPriority and kingsPriority < sanctuaryPriority) then
+              if (hasPet) then
+                WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
+              end
+            elseif (kingsAvailability or sanctuaryAvailability) then
+              -- workaround for sanctuary or kings available (even from same player) -> kings higher priority
+              if (kingsAvailability and aura_env.defaultBuffPriorities[i][2][k] == "KINGS") then
+                kingsPriority = k
+                if (not sanctuaryPriority) then
+                  WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
+                  if (hasPet) then
+                    WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
+                  end
+                else
+                  aura_env.paladinCount = aura_env.paladinCount + 1
+                end
+              else
                 WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
+                if (hasPet) then
+                  WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
+                end
+              end
+              -- workaround for sanctuary or kings available (even from same player) -> sanctuary higher priority
+              if (sanctuaryAvailability and aura_env.defaultBuffPriorities[i][2][k] == "SANCTUARY") then
+                sanctuaryPriority = k
+                if (not kingsPriority) then
+                  WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
+                  if (hasPet) then
+                    WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
+                  end
+                else
+                  aura_env.paladinCount = aura_env.paladinCount + 1
+                end
+              else
+                WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
+                if (hasPet) then
+                  WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
+                end
+              end
+            -- any other case
+            else
+              WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
+              if (hasPet) then
+                WeakAuras.ScanEvent(customEvent.."PET_"..aura_env.defaultBuffPriorities[i][2][k])
               end
             end
-            if (sanctuaryAvailability and aura_env.defaultBuffPriorities[i][2][k] == "SANCTUARY") then
-              sanctuaryPriority = i
-              if (kingsPriority and sanctuaryPriority < kingsPriority) then
-                WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-              end
-            end
-          else
-            WeakAuras.ScanEvent(customEvent..aura_env.defaultBuffPriorities[i][2][k])
-          end  
+          end
         end
       end
     end
@@ -154,4 +182,5 @@ end
 
 -- Send custom event when buffs are about to run out (customizable in seconds!).
 -- check druid tank spec via if def = crit immune
--- track fire elemental from shaman and more
+-- track fire elemental from shaman before fight (snapshotted)
+-- track fire mage, warlock specs
