@@ -153,7 +153,7 @@ aura_env.sendPaladinBlessingEvents = function()
       if (data[2] and data[3]) then
         local _, _, _, _, rank = GetTalentInfo(data[2], data[3])
         if (rank > 0) then
-          -- Druid Tank and Druid Melee set same talent points. Therfore we check for crit immunity here.
+          -- Druid Tank and Druid Melee set same talent points. Therefore we check for crit immunity here.
           if (data[1] == "DRUID") then
             playerSpecRole = aura_env.evaluateRoleByCritImmunity()
           else
@@ -224,10 +224,18 @@ aura_env.filterBlessings = function(buffPriority)
   return blessingPriority
 end
 
+-- 
 aura_env.evaluateRoleByCritImmunity = function ()
+  local defenseRating = GetCombatRating(CR_DEFENSE_SKILL)
+  local resilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN)
+
+  local critImmunityPercentage = defenseRating / 59.135 + resilience / 39.4
+  if (critImmunityPercentage >= 2.6) then
+    return "DRUID-TANK"
+  end
+  return "DRUID-MELEE"
 end
 
 -- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
--- check druid tank spec via if def = crit immune
 -- track fire elemental from shaman before fight (snapshotted)
 -- track fire mage, warlock specs
