@@ -237,5 +237,6 @@ aura_env.evaluateRoleByCritImmunity = function ()
 end
 
 -- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
--- track fire elemental from shaman before fight (snapshotted)
+-- add custom options to override buff prio for yourself
 -- track fire mage, warlock specs
+-- track fire elemental from shaman before fight (snapshotted)
