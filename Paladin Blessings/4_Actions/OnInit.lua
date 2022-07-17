@@ -78,8 +78,8 @@ aura_env.specRoleData = {
 -- Because of that, we track for other raid members having these buffs first to ensure availability.
 aura_env.sanctuaryAvailability = function()
   for unit in WA_IterateGroupMembers() do
-    for spellId in aura_env.sanctuarySpellIds do
-      local name = GetSpellInfo(spellId)
+    for i = 1, #aura_env.sanctuarySpellIds do
+      local name = GetSpellInfo(aura_env.sanctuarySpellIds[i])
       if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
         return true
       end
@@ -92,8 +92,8 @@ end
 -- Because of that, we track for other raid members having these buffs first to ensure availability.
 aura_env.kingsAvailability = function()
   for unit in WA_IterateGroupMembers() do
-    for spellId in aura_env.kingsSpellIds do
-      local name = GetSpellInfo(spellId)
+    for i = 1, #aura_env.kingsSpellIds do
+      local name = GetSpellInfo(aura_env.kingsSpellIds[i])
       if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
         return true
       end
@@ -109,14 +109,14 @@ aura_env.sanctuaryAndKingsAvailability = function()
   local sanctuary = false
   local kings = false
   for unit in WA_IterateGroupMembers() do
-    for spellId in aura_env.sanctuarySpellIds do
-      local name = GetSpellInfo(spellId)
+    for i = 1, #aura_env.sanctuarySpellIds do
+      local name = GetSpellInfo(aura_env.sanctuarySpellIds[i])
       if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
         sanctuary = true
       end
     end
-    for spellId in aura_env.kingsSpellIds do
-      local name = GetSpellInfo(spellId)
+    for i = 1, #aura_env.kingsSpellIds do
+      local name = GetSpellInfo(aura_env.kingsSpellIds[i])
       if (AuraUtil.FindAuraByName(name, unit) ~= nil) then
         kings = true
       end
