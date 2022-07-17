@@ -181,7 +181,7 @@ aura_env.sendPaladinBlessingEvents = function()
 
   -- Send custom events to check for available paladin blessing for the player.
   if (#playerBlessingPriority > 0) then
-    for i=1, #playerBlessingPriority do
+    for i=1, math.min(#playerBlessingPriority, aura_env.paladinCount) do
       WeakAuras.ScanEvents(customEventName..playerBlessingPriority[i])
     end
   end
