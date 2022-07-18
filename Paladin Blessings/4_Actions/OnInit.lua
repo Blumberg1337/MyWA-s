@@ -19,7 +19,7 @@
 --   ["Might"] = {19740, 19834, 19835, 19836, 19837, 19838, 25291, 27140, 25782, 25916, 27141},  -- (Greater) Blessing of Might
 --   ["Wisdom"] = {19742, 19850, 19852, 19853, 19854, 25290, 27142, 25894, 25918, 27143},        -- (Greater) Blessing of Wisdom
 --   ["Light"] = {19977, 19978, 19979, 27144, 25890, 27145},                                     -- (Greater) Blessing of Light
---   ["Sanctuary"] = {20911, 20912, 20913, 20914, 27168, 25899, 27169},                          -- (Greater) Blessing of Wisdom
+--   ["Sanctuary"] = {20911, 20912, 20913, 20914, 27168, 25899, 27169},                          -- (Greater) Blessing of Sanctuary
 -- }
 
 aura_env.kingsSpellIds = {20217, 25898}
