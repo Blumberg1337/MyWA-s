@@ -236,7 +236,7 @@ aura_env.sendPaladinBlessingEvents = function()
 
   -- Send custom events to check for available paladin blessing for the player's pet.
   if (#petBlessingPriority > 0) then
-    for i=1, #petBlessingPriority do
+    for i=1, math.min(#petBlessingPriority, aura_env.paladinCount) do
       WeakAuras.ScanEvents(customEventName.."PET_"..petBlessingPriority[i])
     end
   end
