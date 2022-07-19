@@ -253,20 +253,31 @@ aura_env.filterBlessings = function(buffPriority)
       blessingPriority[i] = buffPriority[i]
     -- Filter (Greater) Blessing of Sanctuary if not available.
     elseif (buffPriority[i] == "SANCTUARY" and not sanctuaryAvailability) then
-      blessingPriority[i] = aura_env.nextValidBlessing()
+      blessingPriority[i] = aura_env.nextValidBlessing(i, buffPriority, kingsAvailability, sanctuaryAvailability)
     -- Filter (Greater) Blessing of Kings if not available.
     elseif (buffPriority[i] == "KINGS" and not kingsAvailability) then
-      blessingPriority[i] = aura_env.nextValidBlessing()
+      blessingPriority[i] = aura_env.nextValidBlessing(i, buffPriority, kingsAvailability, sanctuaryAvailability)
     -- Filter overwritten "none" priority.
     elseif (buffPriority[i] == "none") then
-      blessingPriority[i] = aura_env.nextValidBlessing()
+      blessingPriority[i] = aura_env.nextValidBlessing(i, buffPriority, kingsAvailability, sanctuaryAvailability)
     else
       blessingPriority[i] = buffPriority[i]
     end
   end
 
-  -- filter doubles
-  return blessingPriority
+  -- Filter double values.
+  local filteredBlessingPriority = {}
+  local filteredCounter = 1
+  for i = filteredCounter, #blessingPriority do
+    if (i > 1 and not aura_env.tableContains(filteredBlessingPriority, blessingPriority[i])) then
+      filteredBlessingPriority[filteredCounter] = blessingPriority[i]
+      filteredCounter = filteredCounter + 1
+    elseif (i == 1) then
+      filteredBlessingPriority[filteredCounter] = blessingPriority[i]
+      filteredCounter = filteredCounter + 1
+    end
+  end
+  return filteredBlessingPriority
 end
 
 aura_env.nextValidBlessing = function(current, buffPriority, kingsAvailability, sanctuaryAvailability)
@@ -279,6 +290,15 @@ aura_env.nextValidBlessing = function(current, buffPriority, kingsAvailability, 
       return buffPriority[i]
     end
   end
+end
+
+aura_env.tableContains = function(table, value)
+  for i = 1, #table do
+    if table[i] == value then
+      return true
+    end
+  end
+  return false
 end
 
 -- Druid Tank and Druid Melee set same talent points. Therefore we check for crit immunity here.
