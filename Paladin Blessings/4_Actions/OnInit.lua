@@ -259,7 +259,7 @@ aura_env.filterBlessings = function(buffPriority)
   return blessingPriority
 end
 
--- 
+-- Druid Tank and Druid Melee set same talent points. Therefore we check for crit immunity here.
 aura_env.evaluateRoleByCritImmunity = function ()
   local defenseRating = GetCombatRating(CR_DEFENSE_SKILL)
   local resilience = GetCombatRating(COMBAT_RATING_RESILIENCE_CRIT_TAKEN)
