@@ -312,6 +312,3 @@ aura_env.evaluateRoleByCritImmunity = function ()
   end
   return "DRUID-MELEE"
 end
-
--- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
--- 232, 239, 246 needed? (avoid index out of bound error condition)
