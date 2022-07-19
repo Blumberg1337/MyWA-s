@@ -25,22 +25,28 @@
 aura_env.kingsSpellIds = {20217, 25898}
 aura_env.sanctuarySpellIds = {27168, 27169}    -- {20911, 20912, 20913, 20914, 25899} other ranks (not important for GetSpellInfo())
 
-aura_env.customBuffPriorities = {
-  aura_env.config.blessing1,
-  aura_env.config.blessing2,
-  aura_env.config.blessing3,
-  aura_env.config.blessing4,
-  aura_env.config.blessing5,
-  aura_env.config.blessing6,
+-- We sadly cannot fetch values of custom options dropdown field arrays due to WeakAuras limitations...
+-- So we have to double up the code here... https://github.com/WeakAuras/WeakAuras2/wiki/Custom-Options#dropdown-menu
+aura_env.playerBlessings = {
+  "SALVATION",
+  "KINGS",
+  "MIGHT",
+  "WISDOM",
+  "LIGHT",
+  "SANCTUARY",
+  "none",
 }
 
-aura_env.customPetBuffPriorities = {
-  aura_env.config.blessingPet1,
-  aura_env.config.blessingPet2,
-  aura_env.config.blessingPet3,
-  aura_env.config.blessingPet4,
-  aura_env.config.blessingPet5,
-  aura_env.config.blessingPet6,
+-- We sadly cannot fetch values of custom options dropdown field arrays due to WeakAuras limitations...
+-- So we have to double up the code here... https://github.com/WeakAuras/WeakAuras2/wiki/Custom-Options#dropdown-menu
+aura_env.petBlessings = {
+  "MIGHT",
+  "KINGS",
+  "WISDOM",
+  "SANCTUARY",
+  "LIGHT",
+  "SALVATION",
+  "none",
 }
 
 -- Data Model
@@ -153,7 +159,7 @@ aura_env.countPaladinsInRaidGroup = function()
   
   for unit in WA_IterateGroupMembers() do
     local classFilename = UnitClassBase(unit)
-    if (classFilename == "PALADIN") then
+    if (classFilename == "PALADIN" and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit)) then
       aura_env.paladinCount = aura_env.paladinCount + 1
     end
   end
@@ -193,7 +199,14 @@ aura_env.sendPaladinBlessingEvents = function()
   if (playerSpecRole) then
     local buffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
     if (aura_env.config.overwriteBlessings) then
-      buffPriority = aura_env.customBuffPriorities
+      buffPriority = {
+        aura_env.playerBlessings[aura_env.config.blessing1],
+        aura_env.playerBlessings[aura_env.config.blessing2],
+        aura_env.playerBlessings[aura_env.config.blessing3],
+        aura_env.playerBlessings[aura_env.config.blessing4],
+        aura_env.playerBlessings[aura_env.config.blessing5],
+        aura_env.playerBlessings[aura_env.config.blessing6],
+      }
     end
     playerBlessingPriority = aura_env.filterBlessings(buffPriority)
   end
@@ -202,7 +215,14 @@ aura_env.sendPaladinBlessingEvents = function()
   if (hasPet) then
     local petBuffPriority = aura_env.defaultBuffPriorities["PET"]
     if (aura_env.config.overwritePetBlessings) then
-      petBuffPriority = aura_env.customPetBuffPriorities
+      petBuffPriority = {
+        aura_env.petBlessings[aura_env.config.blessingPet1],
+        aura_env.petBlessings[aura_env.config.blessingPet2],
+        aura_env.petBlessings[aura_env.config.blessingPet3],
+        aura_env.petBlessings[aura_env.config.blessingPet4],
+        aura_env.petBlessings[aura_env.config.blessingPet5],
+        aura_env.petBlessings[aura_env.config.blessingPet6],
+      }
     end
     petBlessingPriority = aura_env.filterBlessings(petBuffPriority)
   end
@@ -233,30 +253,32 @@ aura_env.filterBlessings = function(buffPriority)
       blessingPriority[i] = buffPriority[i]
     -- Filter (Greater) Blessing of Sanctuary if not available.
     elseif (buffPriority[i] == "SANCTUARY" and not sanctuaryAvailability) then
-      -- Avoid index out of bounds error.
-      if (i < #buffPriority) then
-        blessingPriority[i] = buffPriority[i+1]
-        i = i + 1
-      end
+      blessingPriority[i] = aura_env.nextValidBlessing()
     -- Filter (Greater) Blessing of Kings if not available.
     elseif (buffPriority[i] == "KINGS" and not kingsAvailability) then
-      -- Avoid index out of bounds error.
-      if (i < #buffPriority) then
-        blessingPriority[i] = buffPriority[i+1]
-        i = i + 1
-      end
+      blessingPriority[i] = aura_env.nextValidBlessing()
     -- Filter overwritten "none" priority.
     elseif (buffPriority[i] == "none") then
-      -- Avoid index out of bounds error.
-      if (i < #buffPriority) then
-        blessingPriority[i] = buffPriority[i+1]
-        i = i + 1
-      end
+      blessingPriority[i] = aura_env.nextValidBlessing()
     else
       blessingPriority[i] = buffPriority[i]
     end
   end
+
+  -- filter doubles
   return blessingPriority
+end
+
+aura_env.nextValidBlessing = function(current, buffPriority, kingsAvailability, sanctuaryAvailability)
+  for i = current + 1, #buffPriority do
+    -- Avoid index out of bounds error.
+    if (buffPriority[i] and
+        buffPriority[i] ~= "none" and
+        (buffPriority[i] ~= "KINGS" or kingsAvailability) and
+        (buffPriority[i] ~= "SANCTUARY" or sanctuaryAvailability)) then
+      return buffPriority[i]
+    end
+  end
 end
 
 -- Druid Tank and Druid Melee set same talent points. Therefore we check for crit immunity here.
@@ -271,5 +293,8 @@ aura_env.evaluateRoleByCritImmunity = function ()
   return "DRUID-MELEE"
 end
 
+-- filter nil(maybe not necessary -> no valid next blessing = end of array)
+-- filter double values
+-- check if player connected 162
 -- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
 -- 232, 239, 246 needed? (avoid index out of bound error condition)
