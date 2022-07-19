@@ -34,6 +34,15 @@ aura_env.customBuffPriorities = {
   aura_env.config.blessing6,
 }
 
+aura_env.customPetBuffPriorities = {
+  aura_env.config.blessingPet1,
+  aura_env.config.blessingPet2,
+  aura_env.config.blessingPet3,
+  aura_env.config.blessingPet4,
+  aura_env.config.blessingPet5,
+  aura_env.config.blessingPet6,
+}
+
 -- Data Model
 -- ["Class-SpecRole"] = {paladinBlessings}
 aura_env.defaultBuffPriorities = {
@@ -59,7 +68,6 @@ aura_env.defaultBuffPriorities = {
   ["PET"] = {"MIGHT", "KINGS", "WISDOM", "SANCTUARY", "LIGHT", "SALVATION"},
 }
 
--- aura_env.config.overwritePetBlessings, aura_env.config.blessingPet1
 -- Data Model
 -- ["Class-SpecRole"] = {classFileName, talentTreeNumber, talentNumber}
 aura_env.specRoleData = {
@@ -138,7 +146,7 @@ end
 -- Count paladins in raid / group.
 aura_env.countPaladinsInRaidGroup = function()
   aura_env.paladinCount = 0
-
+  
   for unit in WA_IterateGroupMembers() do
     local classFilename = UnitClassBase(unit)
     if (classFilename == "PALADIN") then
@@ -149,14 +157,14 @@ end
 
 aura_env.sendPaladinBlessingEvents = function()
   aura_env.countPaladinsInRaidGroup()
-
+  
   local classFilename = UnitClassBase("player")
   local hasPet = HasPetUI()
   local customEventName = "PALADIN_BLESSING_PRIORITY_"
   local playerSpecRole = nil
   local playerBlessingPriority = {}
   local petBlessingPriority = {}
-
+  
   -- Find player spec.
   for specRole, data in pairs(aura_env.specRoleData) do
     if (data[1] == classFilename) then
@@ -170,20 +178,18 @@ aura_env.sendPaladinBlessingEvents = function()
             playerSpecRole = specRole
           end
         end
-      -- Rogues have no specs that differ in blessing priorities. So they don't have any talent information.
+        -- Rogues have no specs that differ in blessing priorities. So they don't have any talent information.
       elseif (not data[2] and not data[3]) then
         playerSpecRole = specRole
       end
     end
   end
-
+  
   -- Find and copy the player's blessing priority
   if (playerSpecRole) then
-    local buffPriority = {}
+    local buffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
     if (aura_env.config.overwriteBlessings) then
       buffPriority = aura_env.customBuffPriorities
-    else
-      buffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
     end
     playerBlessingPriority = aura_env.filterBlessings(buffPriority)
   end
@@ -191,9 +197,12 @@ aura_env.sendPaladinBlessingEvents = function()
   -- Find and copy the player's pet blessing priority
   if (hasPet) then
     local petBuffPriority = aura_env.defaultBuffPriorities["PET"]
+    if (aura_env.config.overwritePetBlessings) then
+      petBuffPriority = aura_env.customPetBuffPriorities
+    end
     petBlessingPriority = aura_env.filterBlessings(petBuffPriority)
   end
-
+  
   -- Send custom events to check for available paladin blessing for the player.
   if (#playerBlessingPriority > 0) then
     for i=1, math.min(#playerBlessingPriority, aura_env.paladinCount) do
