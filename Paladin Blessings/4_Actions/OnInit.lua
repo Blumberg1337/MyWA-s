@@ -169,7 +169,7 @@ aura_env.sendPaladinBlessingEvents = function()
   aura_env.countPaladinsInRaidGroup()
   
   local classFilename = UnitClassBase("player")
-  local hasPet = HasPetUI()
+  local hasPet = HasPetUI() and UnitHealth("pet") > 0
   local customEventName = "PALADIN_BLESSING_PRIORITY_"
   local playerSpecRole = nil
   local playerBlessingPriority = {}
