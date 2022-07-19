@@ -25,6 +25,15 @@
 aura_env.kingsSpellIds = {20217, 25898}
 aura_env.sanctuarySpellIds = {27168, 27169}    -- {20911, 20912, 20913, 20914, 25899} other ranks (not important for GetSpellInfo())
 
+aura_env.customBuffPriorities = {
+  aura_env.config.blessing1,
+  aura_env.config.blessing2,
+  aura_env.config.blessing3,
+  aura_env.config.blessing4,
+  aura_env.config.blessing5,
+  aura_env.config.blessing6,
+}
+
 -- Data Model
 -- ["Class-SpecRole"] = {paladinBlessings}
 aura_env.defaultBuffPriorities = {
@@ -47,9 +56,10 @@ aura_env.defaultBuffPriorities = {
   ["DRUID-TANK"] = {"KINGS", "MIGHT", "LIGHT", "SANCTUARY", "WISDOM"},
   ["DRUID-MELEE"] = {"SALVATION", "MIGHT", "KINGS", "WISDOM", "LIGHT", "SANCTUARY"},
   ["DRUID-HEAL"] = {"KINGS", "WISDOM", "SALVATION", "LIGHT", "SANCTUARY"},
-  ["PET"] = {"MIGHT", "KINGS", "SANCTUARY", "LIGHT", "SALVATION"},
+  ["PET"] = {"MIGHT", "KINGS", "WISDOM", "SANCTUARY", "LIGHT", "SALVATION"},
 }
 
+-- aura_env.config.overwritePetBlessings, aura_env.config.blessingPet1
 -- Data Model
 -- ["Class-SpecRole"] = {classFileName, talentTreeNumber, talentNumber}
 aura_env.specRoleData = {
@@ -169,14 +179,19 @@ aura_env.sendPaladinBlessingEvents = function()
 
   -- Find and copy the player's blessing priority
   if (playerSpecRole) then
-    local defaultBuffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
-    playerBlessingPriority = aura_env.filterBlessings(defaultBuffPriority)
+    local buffPriority = {}
+    if (aura_env.config.overwriteBlessings) then
+      buffPriority = aura_env.customBuffPriorities
+    else
+      buffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
+    end
+    playerBlessingPriority = aura_env.filterBlessings(buffPriority)
   end
   
   -- Find and copy the player's pet blessing priority
   if (hasPet) then
-    local defaultBuffPriority = aura_env.defaultBuffPriorities["PET"]
-    petBlessingPriority = aura_env.filterBlessings(defaultBuffPriority)
+    local petBuffPriority = aura_env.defaultBuffPriorities["PET"]
+    petBlessingPriority = aura_env.filterBlessings(petBuffPriority)
   end
 
   -- Send custom events to check for available paladin blessing for the player.
@@ -217,6 +232,13 @@ aura_env.filterBlessings = function(buffPriority)
         blessingPriority[i] = buffPriority[i+1]
         i = i + 1
       end
+    -- Filter overwritten "none" priority.
+    elseif (buffPriority[i] == "none") then
+      -- Avoid index out of bounds error.
+      if (i < #buffPriority) then
+        blessingPriority[i] = buffPriority[i+1]
+        i = i + 1
+      end
     else
       blessingPriority[i] = buffPriority[i]
     end
@@ -238,5 +260,6 @@ end
 
 -- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
 -- add custom options to override buff prio for yourself
+-- 218, 225 needed? (avoid index out of bound error condition)
 -- track fire mage, warlock specs
 -- track fire elemental from shaman before fight (snapshotted)
