@@ -269,6 +269,6 @@ end
 
 -- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
 -- add custom options to override buff prio for yourself
--- 218, 225 needed? (avoid index out of bound error condition)
+-- 232, 239, 246 needed? (avoid index out of bound error condition)
 -- track fire mage, warlock specs
 -- track fire elemental from shaman before fight (snapshotted)
