@@ -313,8 +313,5 @@ aura_env.evaluateRoleByCritImmunity = function ()
   return "DRUID-MELEE"
 end
 
--- filter nil(maybe not necessary -> no valid next blessing = end of array)
--- filter double values
--- check if player connected 162
 -- Send custom event when buffs are about to run out (customizable in seconds! 10s - 9min/540s -> in receiving wa).
 -- 232, 239, 246 needed? (avoid index out of bound error condition)
