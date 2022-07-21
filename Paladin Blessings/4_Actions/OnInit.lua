@@ -37,8 +37,6 @@ aura_env.playerBlessings = {
   "none",
 }
 
--- We sadly cannot fetch values of custom options dropdown field arrays due to WeakAuras limitations...
--- So we have to double up the code here... https://github.com/WeakAuras/WeakAuras2/wiki/Custom-Options#dropdown-menu
 aura_env.petBlessings = {
   "MIGHT",
   "KINGS",
@@ -159,7 +157,7 @@ aura_env.countPaladinsInRaidGroup = function()
   
   for unit in WA_IterateGroupMembers() do
     local classFilename = UnitClassBase(unit)
-    if (classFilename == "PALADIN" and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit)) then
+    if (classFilename == "PALADIN" --[[ and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) ]]) then
       aura_env.paladinCount = aura_env.paladinCount + 1
     end
   end
@@ -197,7 +195,7 @@ aura_env.sendPaladinBlessingEvents = function()
   
   -- Find and copy the player's blessing priority
   if (playerSpecRole) then
-    local buffPriority = aura_env.defaultBuffPriorities[playerSpecRole]
+    local buffPriority = {unpack(aura_env.defaultBuffPriorities[playerSpecRole])}
     if (aura_env.config.overwriteBlessings) then
       buffPriority = {
         aura_env.playerBlessings[aura_env.config.blessing1],
@@ -246,59 +244,39 @@ aura_env.filterBlessings = function(buffPriority)
   local sanctuaryAndKingsAvailability = aura_env.sanctuaryAndKingsAvailability()
   local sanctuaryAvailability = aura_env.sanctuaryAvailability()
   local kingsAvailability = aura_env.kingsAvailability()
-  local blessingPriority = {}
 
-  for i = 1, #buffPriority do
-    if (sanctuaryAndKingsAvailability) then
-      blessingPriority[i] = buffPriority[i]
-    -- Filter (Greater) Blessing of Sanctuary if not available.
-    elseif (buffPriority[i] == "SANCTUARY" and not sanctuaryAvailability) then
-      blessingPriority[i] = aura_env.nextValidBlessing(i, buffPriority, kingsAvailability, sanctuaryAvailability)
-    -- Filter (Greater) Blessing of Kings if not available.
-    elseif (buffPriority[i] == "KINGS" and not kingsAvailability) then
-      blessingPriority[i] = aura_env.nextValidBlessing(i, buffPriority, kingsAvailability, sanctuaryAvailability)
-    -- Filter overwritten "none" priority.
-    elseif (buffPriority[i] == "none") then
-      blessingPriority[i] = aura_env.nextValidBlessing(i, buffPriority, kingsAvailability, sanctuaryAvailability)
-    else
-      blessingPriority[i] = buffPriority[i]
+  for i = #buffPriority, 1, -1 do
+    if (not sanctuaryAndKingsAvailability) then
+      -- Filter (Greater) Blessing of Sanctuary if not available.
+      if (buffPriority[i] == "SANCTUARY" and not sanctuaryAvailability) then
+        table.remove(buffPriority, i)
+      -- Filter (Greater) Blessing of Kings if not available.
+      elseif (buffPriority[i] == "KINGS" and not kingsAvailability) then
+        table.remove(buffPriority, i)
+      -- Filter overwritten "none" priority.
+      elseif (buffPriority[i] == "none") then
+        table.remove(buffPriority, i)
+      end
     end
   end
 
   -- Filter double values.
-  local filteredBlessingPriority = {}
+  local filteredBuffPriority = {}
   local filteredCounter = 1
-  for i = filteredCounter, #blessingPriority do
-    if (i > 1 and not aura_env.tableContains(filteredBlessingPriority, blessingPriority[i])) then
-      filteredBlessingPriority[filteredCounter] = blessingPriority[i]
+  for i = filteredCounter, #buffPriority do
+    if (i > 1 and not aura_env.tableContains(filteredBuffPriority, buffPriority[i])) then
+      filteredBuffPriority[filteredCounter] = buffPriority[i]
       filteredCounter = filteredCounter + 1
     elseif (i == 1) then
-      filteredBlessingPriority[filteredCounter] = blessingPriority[i]
+      filteredBuffPriority[filteredCounter] = buffPriority[i]
       filteredCounter = filteredCounter + 1
     end
   end
-  return filteredBlessingPriority
-end
-
-aura_env.nextValidBlessing = function(current, buffPriority, kingsAvailability, sanctuaryAvailability)
-  for i = current + 1, #buffPriority do
-    -- Avoid index out of bounds error.
-    if (buffPriority[i] and
-        buffPriority[i] ~= "none" and
-        (buffPriority[i] ~= "KINGS" or kingsAvailability) and
-        (buffPriority[i] ~= "SANCTUARY" or sanctuaryAvailability)) then
-      return buffPriority[i]
-    end
-  end
+  return filteredBuffPriority
 end
 
 aura_env.tableContains = function(table, value)
-  for i = 1, #table do
-    if table[i] == value then
-      return true
-    end
-  end
-  return false
+  return table[value] ~= nil
 end
 
 -- Druid Tank and Druid Melee set same talent points. Therefore we check for crit immunity here.
