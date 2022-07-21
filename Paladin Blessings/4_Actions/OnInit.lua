@@ -157,7 +157,7 @@ aura_env.countPaladinsInRaidGroup = function()
   
   for unit in WA_IterateGroupMembers() do
     local classFilename = UnitClassBase(unit)
-    if (classFilename == "PALADIN" --[[ and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) ]]) then
+    if (classFilename == "PALADIN" and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit)) then
       aura_env.paladinCount = aura_env.paladinCount + 1
     end
   end
