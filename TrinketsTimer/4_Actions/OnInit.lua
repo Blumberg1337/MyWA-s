@@ -148,9 +148,7 @@ aura_env.getTrinketCds = function()
   end_2 = start_2 >= 0 and start_2 + duration_2 or start_1 + duration_1 + 1
 
   -- we do some checks here for wanding, what sets EVERYTHING on cd equal to its attack speed
-  local rangedItemId = GetInventoryItemID("player", 18)
-  local rangedItemSubClassId = rangedItemId and select(13, GetItemInfo(rangedItemId))
-  local wand = rangedItemSubClassId and rangedItemSubClassId == 19 -- Wands: 19
+  local wand = HasWandEquipped()
   local wandSpeed = wand and select(1, UnitRangedDamage("player"))
 
   -- now we set end_n to 0 if duration_n is the same as the determined attack speed of our wand
