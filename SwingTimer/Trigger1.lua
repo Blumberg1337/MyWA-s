@@ -62,7 +62,21 @@ customTrigger = function(e,...)
     end
   end
   
-  -- Extra attacks should not reset weapon swing timer
+   -- Ability on weapon swing succeded or failed to hit target
+   if (subEvent == "SPELL_DAMAGE" or subEvent == "SPELL_MISSED") then
+    if (sourceName == playerName and not aura_env.extraAttacks) then
+      for i=1, #aura_env.swingTimerSpellIds do
+        if (select(12, ...) == aura_env.swingTimerSpellIds[i]) then
+          aura_env.startTime = GetTime()
+          aura_env.extraAttacks = false
+          return true
+        end
+      end
+    end
+    aura_env.extraAttacks = false
+  end
+  
+ -- Extra attacks should not reset weapon swing timer
   if (subEvent == "SPELL_EXTRA_ATTACKS") then
     if (sourceName == playerName) then
       aura_env.extraAttacks = true
