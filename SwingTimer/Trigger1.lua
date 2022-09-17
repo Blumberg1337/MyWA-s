@@ -62,8 +62,8 @@ customTrigger = function(e,...)
     end
   end
   
-   -- Ability on weapon swing succeded or failed to hit target
-   if (subEvent == "SPELL_DAMAGE" or subEvent == "SPELL_MISSED") then
+  -- Ability on weapon swing succeded or failed to hit target
+  if (subEvent == "SPELL_DAMAGE" or subEvent == "SPELL_MISSED") then
     if (sourceName == playerName and not aura_env.extraAttacks) then
       for i=1, #aura_env.swingTimerSpellIds do
         if (select(12, ...) == aura_env.swingTimerSpellIds[i]) then
