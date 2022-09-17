@@ -5,5 +5,5 @@ aura_env.swingTimerSpellIds = {
   78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286, 29707, 30324, 47450, 47449, --[[ Heroic Strike ]]
   -- 1464, 8820, 11604, 11605, 25241, 25242, --[[ Slam ]] can still clip swing timer as an example 
   -- (how exactly is the swing timer effected by that clipping mechanic?
-  -- -> calculate time between cast start, cast end and new swing -> log it)
+  -- -> calculate time between cast start, cast end and new swing -> log it -> not possible, because not tracked by CLEU:SPELL_CAST_N)
 }
