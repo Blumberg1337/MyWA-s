@@ -1,30 +1,44 @@
 -- trigger data (copy text inside of quotes)
 type = "Custom"
 eventType = "Event"
-events = "CLEU:SWING_DAMAGE, CLEU:SWING_MISSED, CLEU:SPELL_EXTRA_ATTACKS"
+events = "CLEU:SWING_DAMAGE, CLEU:SWING_MISSED, CLEU:SPELL_EXTRA_ATTACKS, CLEU:SPELL_DAMAGE, CLEU:SPELL_MISSED, UNIT_INVENTORY_CHANGED:player"
 
 customTrigger = function(e,...)
   aura_env.parryHasteBonus = 0
-
+  
   local subEvent = select(2, ...)
   local sourceName = select(5,...)
   local destName = select(9,...)
   local playerName = UnitName("player")
-  
-  -- Weapon swing succeded to damage target
+
+  -- Main hand weapon change results in a swing timer reset
+  if (e == "UNIT_INVENTORY_CHANGED") then
+    local mhId = GetInventoryItemID("player", 16)
+    if aura_env.mhId and aura_env.mhId ~= mhId then
+      aura_env.startTime = GetTime()
+      return true
+    end
+  else
+    aura_env.mhId = GetInventoryItemID("player", 16)
+  end
+
+  -- Weapon swing succeded to hit target
   if (subEvent == "SWING_DAMAGE") then
     -- Weapon swing from player's main hand weapon excluding extra attacks
     if (select(21, ...) == false and sourceName == playerName and not aura_env.extraAttacks) then
       aura_env.startTime = GetTime()
+      aura_env.extraAttacks = false
+      return true
     end
     aura_env.extraAttacks = false
   end
-
-  -- Weapon swing failed to damage target
+  
+  -- Weapon swing failed to hit target
   if (subEvent == "SWING_MISSED") then
     -- Weapon swing from player's main hand weapon
     if (select(13, ...) == false and sourceName == playerName) then
       aura_env.startTime = GetTime()
+      return true
     end
     -- Player gets parry-hasted
     if (destName == playerName and select(12, ...) == "PARRY") then
@@ -37,23 +51,24 @@ customTrigger = function(e,...)
         if (minSwingTime < swingTimeRemaining) then
           swingTimeRemaining = swingTimeRemaining - (mhSpeed * 0.4)
           aura_env.parryHasteBonus = mhSpeed * 0.4
-
+          
           -- New calculated swing timer below 20% (or old one above 80%) -> set to 20%
           if (swingTimeRemaining < minSwingTime) then
             aura_env.parryHasteBonus = minSwingTime
           end
+          return true
         end 
       end
     end
   end
-
+  
   -- Extra attacks should not reset weapon swing timer
   if (subEvent == "SPELL_EXTRA_ATTACKS") then
     if (sourceName == playerName) then
       aura_env.extraAttacks = true
+      return true
     end
   end
-  return true
 end
 
 hide = "Timed"
