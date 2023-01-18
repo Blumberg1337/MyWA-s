@@ -134,7 +134,7 @@ aura_env.getTrinketCds = function()
   -- if we have a trinket equipped in INVSLOT_TRINKET1 (slotId: 13) and if it's usable we get its startTime, otherwise -1
   -- same goes for duration, but returning 0 instead of -1 if no trinket equipped in INVSLOT_TRINKET1 (slotId: 13)
   start_1 =
-    aura_env.trinket_1_Id and aura_env.trinket_1_usable and select(1, C_Container.C_Container.GetItemCooldown(aura_env.trinket_1_Id)) or -1
+    aura_env.trinket_1_Id and aura_env.trinket_1_usable and select(1, C_Container.GetItemCooldown(aura_env.trinket_1_Id)) or -1
   duration_1 = aura_env.trinket_1_Id and select(2, C_Container.GetItemCooldown(aura_env.trinket_1_Id)) or 0
 
   -- same as above for INVSLOT_TRINKET2 (slotId: 14)
